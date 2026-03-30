@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Demand Forecasting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h2>🛒 AI Demand Forecaster</h2>
+
+    <input type="date" id="date"><br>
+    <input type="number" id="store_id" placeholder="Store ID"><br>
+    <input type="number" id="sku_id" placeholder="SKU ID"><br>
+    <input type="number" id="base_price" placeholder="Base Price"><br>
+    <input type="number" id="total_price" placeholder="Total Price"><br>
+
+    <label>Featured</label>
+    <input type="checkbox" id="featured"><br>
+
+    <label>Display</label>
+    <input type="checkbox" id="display"><br><br>
+
+    <button onclick="predict()">Predict</button>
+
+    <h3 id="result"></h3>
+    <p id="insight"></p>
+</div>
+
+<script>
+async function predict() {
+    const data = {
+        date: document.getElementById("date").value,
+        store_id: parseInt(document.getElementById("store_id").value),
+        sku_id: parseInt(document.getElementById("sku_id").value),
+        base_price: parseFloat(document.getElementById("base_price").value),
+        total_price: parseFloat(document.getElementById("total_price").value),
+        featured: document.getElementById("featured").checked ? 1 : 0,
+        display: document.getElementById("display").checked ? 1 : 0
+    };
+
+    const res = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    document.getElementById("result").innerText =
+        "Prediction: " + result.prediction;
+
+    document.getElementById("insight").innerText =
+        result.insight;
+}
+</script>
+
+</body>
+</html>
