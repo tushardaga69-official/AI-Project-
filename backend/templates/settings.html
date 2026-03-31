@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexStock AI - Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Account Settings</h1>
+            <p>Manage your platform visual layout and preferences.</p>
+        </header>
+        
+        <div class="card" style="max-width: 900px; padding: 2rem; margin: 0;">
+            <h2 style="margin-bottom: 0.5rem;">Appearance & Theme</h2>
+            <p>Choose the aesthetic that you prefer for your AI environment.</p>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--text-secondary);">Dark & High-Contrast</h3>
+            <div class="theme-options" style="margin-bottom: 2.5rem;">
+                <div class="theme-card" data-theme-value="midnight">
+                    <div class="theme-circle" style="background: linear-gradient(135deg, #0f111a, #131722); border-color: #38bdf8;"></div>
+                    <h3>Midnight</h3>
+                    <p>NexStock AI</p>
+                </div>
+
+                <div class="theme-card" data-theme-value="ocean">
+                    <div class="theme-circle" style="background: #083344; border-color: #22d3ee;"></div>
+                    <h3>Ocean Deep</h3>
+                    <p>Cyan & Teal</p>
+                </div>
+
+                <div class="theme-card" data-theme-value="cyberpunk">
+                    <div class="theme-circle" style="background: #120428; border-color: #ff0055;"></div>
+                    <h3>High Voltage</h3>
+                    <p>Neon Pink Edge</p>
+                </div>
+
+                <div class="theme-card" data-theme-value="dark">
+                    <div class="theme-circle" style="background: #000; border-color: #333;"></div>
+                    <h3>Deep Dark</h3>
+                    <p>Pure Minimalist</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--text-secondary);">Light & Clean</h3>
+            <div class="theme-options">
+                <div class="theme-card" data-theme-value="light">
+                    <div class="theme-circle" style="background: #fff; border-color: #e5e7eb;"></div>
+                    <h3>SaaS Light</h3>
+                    <p>White & Clean</p>
+                </div>
+
+                <div class="theme-card" data-theme-value="warm-light">
+                    <div class="theme-circle" style="background: #faf9f6; border-color: #d97757; border-width: 2px;"></div>
+                    <h3>Warm Ivory</h3>
+                    <p>Cozy Terracotta</p>
+                </div>
+
+                <div class="theme-card" data-theme-value="cloud">
+                    <div class="theme-circle" style="background: #f8fafc; border-color: #0ea5e9; border-width: 2px;"></div>
+                    <h3>Cloud Blue</h3>
+                    <p>Ice Modern</p>
+                </div>
+                
+                <div class="theme-card" data-theme-value="mint">
+                    <div class="theme-circle" style="background: #f0fdf4; border-color: #10b981; border-width: 2px;"></div>
+                    <h3>Mint Fresh</h3>
+                    <p>Green Spring</p>
+                </div>
+            </div>
+
+            <!-- Placeholder for future settings -->
+            <h2 style="margin-bottom: 0.5rem; margin-top: 3rem;">Notification Preferences</h2>
+            <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                <label class="checkbox-group">
+                    <input type="checkbox" checked> Receive Critical Inventory Alerts via Email
+                </label>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

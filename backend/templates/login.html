@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in - Inventory Demand Forecaster</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <!-- Theme Toggler Script -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</head>
+<body>
+
+<!-- Theme Toggler -->
+<button id="theme-toggle-btn" class="theme-toggle">🌙 Dark Mode</button>
+
+<div class="auth-wrapper">
+    <div class="card">
+        <h2>Log in</h2>
+        <p class="subtitle">Access the Inventory Forecaster platform.</p>
+
+        {% if error %}
+        <div class="alert alert-error">
+            <h3>Authentication Error</h3>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="/login">   
+            
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input class="input-field" type="text" id="username" name="username" placeholder="Enter username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input class="input-field" type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            
+            <button class="btn-primary" type="submit">Log In</button>  
+
+        </form>
+
+        <a href="/signup" class="link-text">Don't have an account? Sign up</a>
+    </div>
+</div>
+
+</body>
+</html>

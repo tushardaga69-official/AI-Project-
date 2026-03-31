@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexStock AI - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</head>
+<body>
+
+<div class="app-layout">
+    
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Global Inventory Analytics</h1>
+            <p>Welcome back. Analyze recent inventory demand forecasts across all sectors.</p>
+        </header>
+        
+        <div class="dashboard-grid" id="charts-container" style="display: none;">
+            <div class="chart-box main">
+                <h3 style="margin-bottom: 1rem; font-size: 1rem;">Prediction Trend (Last 10)</h3>
+                <div style="height: 280px; position: relative;"><canvas id="trendChart"></canvas></div>
+            </div>
+            <div class="chart-box sub">
+                <h3 style="margin-bottom: 1rem; font-size: 1rem;">Insights Distribution (All Time)</h3>
+                <div style="height: 230px; position: relative;"><canvas id="pieChart"></canvas></div>
+            </div>
+            <div class="chart-box sub">
+                <h3 style="margin-bottom: 1rem; font-size: 1rem;">Volume Groups (All Time)</h3>
+                <div style="height: 230px; position: relative;"><canvas id="barChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="no-data-msg" style="text-align: center; padding: 4rem 2rem; border: 1px dashed var(--border-color); border-radius: 12px; margin-top: 1.5rem;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Awaiting Analytical Data</h3>
+            <p>You have not executed any AI predictions yet. Visit the AI Forecast screen to prime the dashboard pipeline.</p>
+        </div>
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

@@ -1,57 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Demand Forecasting</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Demand Forecasting Configurator</title>
+    <!-- Updated path to the correct CSS file location -->
+    <link rel="stylesheet" href="static/CSS/style.css">
+    <script src="static/js/theme.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <h2>🛒 AI Demand Forecaster</h2>
+<button id="theme-toggle-btn" class="theme-toggle">🌙 Dark Mode</button>
 
-    <input type="date" id="date"><br>
-    <input type="number" id="store_id" placeholder="Store ID"><br>
-    <input type="number" id="sku_id" placeholder="SKU ID"><br>
-    <input type="number" id="base_price" placeholder="Base Price"><br>
-    <input type="number" id="total_price" placeholder="Total Price"><br>
+<div class="auth-wrapper" style="align-items: flex-start; padding-top: 5rem;">
+    <div class="card" style="max-width: 600px; width: 100%;">
+        <div style="text-align: left; margin-bottom: 2.5rem;">
+            <h2>Demand Forecaster</h2>
+            <p class="subtitle">Standalone Evaluation Module.</p>
+        </div>
 
-    <label>Featured</label>
-    <input type="checkbox" id="featured"><br>
+        <div class="grid-form">
+            <div class="input-group">
+                <label>Target Date</label>
+                <input type="date" id="date" class="input-field">
+            </div>
+            
+            <div class="input-group">
+                <label>Store ID</label>
+                <input type="number" id="store_id" placeholder="Store ID" class="input-field">
+            </div>
+            
+            <div class="input-group">
+                <label>SKU ID</label>
+                <input type="number" id="sku_id" placeholder="SKU ID" class="input-field">
+            </div>
+            
+            <div class="input-group">
+                <label>Base Price ($)</label>
+                <input type="number" id="base_price" placeholder="e.g. 50" class="input-field">
+            </div>
+            
+            <div class="input-group">
+                <label>Total Price ($)</label>
+                <input type="number" id="total_price" placeholder="e.g. 40" class="input-field">
+            </div>
 
-    <label>Display</label>
-    <input type="checkbox" id="display"><br><br>
+            <div class="input-group full-width" style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                <label class="checkbox-group">
+                    <input type="checkbox" id="featured"> Featured Items Rule
+                </label>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="display"> Display Promotion Active
+                </label>
+            </div>
 
-    <button onclick="predict()">Predict</button>
+            <div class="full-width" style="margin-top: 1rem;">
+                <button class="btn-primary" onclick="predict()" id="predict-btn">Generate Computation</button>
+            </div>
+        </div>
 
-    <h3 id="result"></h3>
-    <p id="insight"></p>
+        <!-- Output Box -->
+        <div id="output-box" class="alert" style="margin-top: 1.5rem; display: none;">
+            <h3 id="result"></h3>
+            <p id="insight"></p>
+        </div>
+    </div>
 </div>
 
 <script>
 async function predict() {
+    const btn = document.getElementById("predict-btn");
+    const outBox = document.getElementById("output-box");
+    const resultText = document.getElementById("result");
+    const insightText = document.getElementById("insight");
+
+    btn.innerText = "Analyzing variables...";
+    btn.disabled = true;
+    
+    outBox.classList.remove("show", "alert-error", "alert-success");
+    outBox.style.display = "none";
+
     const data = {
         date: document.getElementById("date").value,
-        store_id: parseInt(document.getElementById("store_id").value),
-        sku_id: parseInt(document.getElementById("sku_id").value),
-        base_price: parseFloat(document.getElementById("base_price").value),
-        total_price: parseFloat(document.getElementById("total_price").value),
+        store_id: parseInt(document.getElementById("store_id").value || 0),
+        sku_id: parseInt(document.getElementById("sku_id").value || 0),
+        base_price: parseFloat(document.getElementById("base_price").value || 0),
+        total_price: parseFloat(document.getElementById("total_price").value || 0),
         featured: document.getElementById("featured").checked ? 1 : 0,
         display: document.getElementById("display").checked ? 1 : 0
     };
 
-    const res = await fetch("http://127.0.0.1:5000/predict", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
+    try {
+        const res = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
 
-    const result = await res.json();
+        const result = await res.json();
+        
+        outBox.style.display = "block";
+        outBox.classList.add("show");
 
-    document.getElementById("result").innerText =
-        "Prediction: " + result.prediction;
-
-    document.getElementById("insight").innerText =
-        result.insight;
+        if(result.error) {
+            outBox.classList.add("alert-error");
+            resultText.innerText = "Processing Issue";
+            insightText.innerText = result.error;
+        } else {
+            outBox.classList.add("alert-success");
+            resultText.innerText = "Projected Demand: " + result.prediction;
+            insightText.innerText = result.insight;
+        }
+    } catch(err) {
+        outBox.style.display = "block";
+        outBox.classList.add("show", "alert-error");
+        resultText.innerText = "Network Error";
+        insightText.innerText = err;
+    } finally {
+        btn.innerText = "Generate Computation";
+        btn.disabled = false;
+    }
 }
 </script>
 
