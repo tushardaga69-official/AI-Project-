@@ -1,8 +1,10 @@
+```python
 from flask import Flask, request, jsonify, render_template, redirect, session
 import pickle
 import pandas as pd
 import numpy as np
-import mysql.connector
+import psycopg2
+import os
 import re
 
 app = Flask(__name__)
@@ -14,13 +16,7 @@ model = pickle.load(open('model.pkl', 'rb'))
 # ---------- DATABASE ----------
 
 def get_db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root",   
-        database="ai_inventory",
-        port=3307
-    )
+    return psycopg2.connect(os.getenv("DATABASE_URL"))
 
 def init_db():
     try:
@@ -28,7 +24,7 @@ def init_db():
         cur = conn.cursor()
         cur.execute('''
             CREATE TABLE IF NOT EXISTS predictions (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 username VARCHAR(255),
                 store_id INT,
                 sku_id INT,
@@ -52,8 +48,10 @@ def inject_alert_count():
         try:
             conn = get_db()
             cur = conn.cursor()
-            # Smart Alerts = extremes (High > 100, Low < 50)
-            cur.execute("SELECT COUNT(*) FROM predictions WHERE username=%s AND (prediction > 100 OR prediction < 50)", (session['user'],))
+            cur.execute(
+                "SELECT COUNT(*) FROM predictions WHERE username=%s AND (prediction > 100 OR prediction < 50)",
+                (session['user'],)
+            )
             count = cur.fetchone()[0]
             cur.close()
             conn.close()
@@ -75,7 +73,7 @@ def login():
         p = request.form.get('password')
 
         conn = get_db()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE username=%s AND password=%s", (u, p))
         user = cur.fetchone()
         cur.close()
@@ -96,7 +94,7 @@ def signup():
 
         pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
         if not re.match(pattern, p):
-            return render_template('signup.html', error="Password must be 8+ characters, with uppercase, lowercase, number, and special character.")
+            return render_template('signup.html', error="Password must be strong.")
 
         try:
             conn = get_db()
@@ -106,8 +104,8 @@ def signup():
             cur.close()
             conn.close()
             return redirect('/login')
-        except Exception as e:
-            return render_template('signup.html', error="Username already exists or database error.")
+        except:
+            return render_template('signup.html', error="Username exists or DB error.")
 
     return render_template('signup.html')
 
@@ -134,13 +132,27 @@ def settings_page():
 def reports_page():
     if 'user' not in session:
         return redirect('/login')
-        
+
     history = []
     try:
         conn = get_db()
-        cur = conn.cursor(dictionary=True)
-        cur.execute("SELECT * FROM predictions WHERE username=%s ORDER BY created_at DESC LIMIT 50", (session['user'],))
-        history = cur.fetchall()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM predictions WHERE username=%s ORDER BY created_at DESC LIMIT 50",
+            (session['user'],)
+        )
+        rows = cur.fetchall()
+        history = [
+            {
+                "id": r[0],
+                "username": r[1],
+                "store_id": r[2],
+                "sku_id": r[3],
+                "prediction": r[4],
+                "insight": r[5],
+                "created_at": r[6]
+            } for r in rows
+        ]
         cur.close()
         conn.close()
     except Exception as e:
@@ -152,13 +164,24 @@ def reports_page():
 def alerts_page():
     if 'user' not in session:
         return redirect('/login')
-        
+
     alerts = []
     try:
         conn = get_db()
-        cur = conn.cursor(dictionary=True)
-        cur.execute("SELECT * FROM predictions WHERE username=%s AND (prediction > 100 OR prediction < 50) ORDER BY created_at DESC", (session['user'],))
-        alerts = cur.fetchall()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM predictions WHERE username=%s AND (prediction > 100 OR prediction < 50) ORDER BY created_at DESC",
+            (session['user'],)
+        )
+        rows = cur.fetchall()
+        alerts = [
+            {
+                "id": r[0],
+                "prediction": r[4],
+                "insight": r[5],
+                "created_at": r[6]
+            } for r in rows
+        ]
         cur.close()
         conn.close()
     except Exception as e:
@@ -176,69 +199,50 @@ def predict_page():
 def dashboard_stats():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     try:
         conn = get_db()
-        cur = conn.cursor(dictionary=True)
-        # Trend Data (Last 10)
-        cur.execute("SELECT prediction, created_at FROM predictions WHERE username=%s ORDER BY created_at DESC LIMIT 10", (session['user'],))
+        cur = conn.cursor()
+
+        cur.execute(
+            "SELECT prediction, created_at FROM predictions WHERE username=%s ORDER BY created_at DESC LIMIT 10",
+            (session['user'],)
+        )
         trend_rows = cur.fetchall()
         trend_rows.reverse()
-        
-        # Aggregate Data
+
         cur.execute("SELECT prediction FROM predictions WHERE username=%s", (session['user'],))
         all_preds = cur.fetchall()
+
         cur.close()
         conn.close()
 
-        # Trend Arrays
-        trend_labels = [row['created_at'].strftime('%b %d, %H:%M') if row['created_at'] else '' for row in trend_rows]
-        trend_data = [row['prediction'] for row in trend_rows]
+        trend_labels = [row[1].strftime('%b %d, %H:%M') if row[1] else '' for row in trend_rows]
+        trend_data = [row[0] for row in trend_rows]
 
-        # Pie Arrays (Anomalies vs Stable)
-        low_risk = 0  
-        stable = 0
-        overstock_risk = 0
-        
-        hist_bins = [0, 0, 0, 0, 0] # 0-25, 26-50, 51-75, 76-100, 101+
+        low_risk = stable = overstock_risk = 0
+        hist_bins = [0, 0, 0, 0, 0]
 
         for p in all_preds:
-            val = p['prediction']
-            
-            # Pie
+            val = p[0]
             if val < 50: low_risk += 1
             elif val > 100: overstock_risk += 1
             else: stable += 1
-                
-            # Histogram
+
             if val <= 25: hist_bins[0] += 1
             elif val <= 50: hist_bins[1] += 1
             elif val <= 75: hist_bins[2] += 1
             elif val <= 100: hist_bins[3] += 1
             else: hist_bins[4] += 1
 
-        # If zero historical data, send empty flags
-        has_data = len(all_preds) > 0
-
         return jsonify({
-            "has_data": has_data,
-            "trend": {
-                "labels": trend_labels,
-                "data": trend_data
-            },
-            "pie": {
-                "labels": ["High Demand Surge (>100)", "Stable Volume (50-100)", "Stockout Warning (<50)"],
-                "data": [overstock_risk, stable, low_risk]
-            },
-            "histogram": {
-                "labels": ["0-25", "26-50", "51-75", "76-100", "101+ Units"],
-                "data": hist_bins
-            }
+            "trend": {"labels": trend_labels, "data": trend_data},
+            "pie": {"data": [overstock_risk, stable, low_risk]},
+            "histogram": {"data": hist_bins}
         })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 # ---------- ML LOGIC ----------
 
@@ -274,21 +278,16 @@ def preprocess(data):
 def predict():
     try:
         data = request.get_json()
-
-        if not data:
-            return jsonify({"error": "No input provided"}), 400
-
         df = preprocess(data)
         pred = int(model.predict(df)[0])
 
         if pred > 100:
-            insight = f"High demand anticipated ({pred} units). It is strongly recommended to increase inventory allocation to prevent potential stockouts and lost revenue."
+            insight = "High demand anticipated."
         elif pred > 50:
-            insight = f"Moderate demand forecasted ({pred} units). Product movement is stable; proceed with standard periodic restocking cycles."
+            insight = "Moderate demand forecasted."
         else:
-            insight = f"Low demand projected ({pred} units). Consider minimizing immediate restocking to optimize warehousing space and avoid overstock."
+            insight = "Low demand projected."
 
-        # LOG PREDICTION TO DB
         if 'user' in session:
             conn = get_db()
             cur = conn.cursor()
@@ -300,13 +299,11 @@ def predict():
             cur.close()
             conn.close()
 
-        return jsonify({
-            "prediction": pred,
-            "insight": insight
-        })
+        return jsonify({"prediction": pred, "insight": insight})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 if __name__ == '__main__':
     app.run(debug=True)
+```
