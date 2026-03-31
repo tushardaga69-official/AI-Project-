@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexStock AI · Forecast</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script>window.ACTIVE_PAGE = 'forecast';</script>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <div id="sidebarMount"></div>
+
+  <div class="main">
+    <div id="topbarMount"></div>
+
+    <div class="page-content">
+
+      <!-- AI Banner -->
+      <div class="ai-banner">
+        <div class="ai-pulse-icon">🔮</div>
+        <div class="ai-banner-body">
+          <div class="ai-banner-title">AI Demand Prediction Engine · LSTM Neural Network</div>
+          <div class="ai-banner-msg" id="forecastBannerMsg">
+            Select a product and time range, then click "Run AI Prediction" to generate demand forecasts
+          </div>
+        </div>
+        <div class="ai-status-pills">
+          <div class="ai-pill">
+            <div class="pill-dot" style="background:var(--accent-violet)"></div>
+            LSTM v3.2
+          </div>
+          <div class="ai-pill">
+            <div class="pill-dot" style="background:var(--accent-emerald);box-shadow:0 0 4px var(--accent-emerald)"></div>
+            94% Accuracy
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="forecast-controls">
+        <div class="range-tabs">
+          <button class="range-tab active" data-range="7">7 Days</button>
+          <button class="range-tab"        data-range="14">14 Days</button>
+          <button class="range-tab"        data-range="30">30 Days</button>
+        </div>
+
+        <select class="filter-select" id="forecastProduct">
+          <option value="all">All Products</option>
+          <option>iPhone 15 Pro</option>
+          <option>Nike Air Max</option>
+          <option>Protein Powder</option>
+          <option>Samsung TV 55"</option>
+          <option>AirPods Pro</option>
+          <option>Yoga Mat Pro</option>
+        </select>
+
+        <button class="btn btn-primary" id="predictBtn">
+          <span class="btn-spinner" id="predictSpinner" style="display:none"></span>
+          🤖 Run AI Prediction
+        </button>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="forecast-metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Predicted Demand</div>
+          <div class="metric-value text-cyan metric-placeholder" id="metricDemand">—</div>
+          <div class="metric-sub" id="metricDemandSub">Run forecast to see prediction</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Recommended Reorder</div>
+          <div class="metric-value text-violet metric-placeholder" id="metricReorder">—</div>
+          <div class="metric-sub" id="metricReorderSub">Run forecast to see recommendation</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Confidence Score</div>
+          <div class="metric-value text-emerald metric-placeholder" id="metricConf">—</div>
+          <div class="metric-sub" id="metricConfSub">ML model confidence</div>
+        </div>
+      </div>
+
+      <!-- Forecast Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Past Sales vs AI Predicted Sales</div>
+            <div class="card-subtitle">Historical data (solid line) · AI forecast (dashed line)</div>
+          </div>
+          <span class="badge badge-violet">🤖 ML Powered</span>
+        </div>
+        <div class="chart-wrap chart-wrap-xl">
+          <canvas id="forecastChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/forecast.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexStock AI · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script>window.ACTIVE_PAGE = 'dashboard';</script>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- Sidebar injected by layout.js -->
+  <div id="sidebarMount"></div>
+
+  <div class="main">
+    <!-- Topbar injected by layout.js -->
+    <div id="topbarMount"></div>
+
+    <div class="page-content">
+
+      <!-- AI Banner -->
+      <div class="ai-banner">
+        <div class="ai-pulse-icon">🤖</div>
+        <div class="ai-banner-body">
+          <div class="ai-banner-title">AI Forecast Engine · Active</div>
+          <div class="ai-banner-msg" id="aiBannerMsg">
+            ⚡ Predicted demand for next 7 days: 120 units · Stock available: 50 → Need to restock
+          </div>
+        </div>
+        <div class="ai-status-pills">
+          <div class="ai-pill">
+            <div class="pill-dot" style="background:var(--accent-emerald);box-shadow:0 0 4px var(--accent-emerald)"></div>
+            Model v3.2
+          </div>
+          <div class="ai-pill">
+            <div class="pill-dot" style="background:var(--accent-cyan);box-shadow:0 0 4px var(--accent-cyan);animation:pulse 1.5s infinite"></div>
+            Live
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-grid mb-24">
+        <div class="stat-card cyan">
+          <div class="stat-icon cyan">📦</div>
+          <div class="stat-value text-cyan" id="statTotalProducts">—</div>
+          <div class="stat-label">Total Products</div>
+          <div class="stat-change up">↑ 12% from last month</div>
+        </div>
+        <div class="stat-card rose">
+          <div class="stat-icon rose">⚠️</div>
+          <div class="stat-value text-rose" id="statLowStock">—</div>
+          <div class="stat-label">Low Stock Alerts</div>
+          <div class="stat-change down">↑ 3 new today</div>
+        </div>
+        <div class="stat-card emerald">
+          <div class="stat-icon emerald">💰</div>
+          <div class="stat-value text-emerald" id="statRevenue">—</div>
+          <div class="stat-label">Est. Monthly Revenue</div>
+          <div class="stat-change up">↑ 8.4% vs last month</div>
+        </div>
+        <div class="stat-card violet">
+          <div class="stat-icon violet">🔮</div>
+          <div class="stat-value text-violet">94%</div>
+          <div class="stat-label">AI Forecast Accuracy</div>
+          <div class="stat-change up">↑ 2% improvement</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1: Sales + Category -->
+      <div class="charts-grid-main mb-16">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Sales Overview</div>
+              <div class="card-subtitle">Units sold by period</div>
+            </div>
+            <div class="range-tabs" id="salesRangeTabs">
+              <button class="range-tab active" onclick="updateSalesChart('daily', this)">Daily</button>
+              <button class="range-tab" onclick="updateSalesChart('weekly', this)">Weekly</button>
+              <button class="range-tab" onclick="updateSalesChart('monthly', this)">Monthly</button>
+            </div>
+          </div>
+          <div class="chart-wrap chart-wrap-md">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Category Split</div>
+              <div class="card-subtitle">By inventory value</div>
+            </div>
+          </div>
+          <div class="chart-wrap chart-wrap-md">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2: Forecast + Stock Health -->
+      <div class="charts-grid-even">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">AI Demand Forecast</div>
+              <div class="card-subtitle">Past 14 days · Next 7-day prediction</div>
+            </div>
+            <span class="badge badge-cyan">🤖 AI</span>
+          </div>
+          <div class="chart-wrap chart-wrap-md">
+            <canvas id="forecastMiniChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Stock Health</div>
+              <div class="card-subtitle">In-stock / Low / Overstock by category</div>
+            </div>
+          </div>
+          <div class="chart-wrap chart-wrap-md">
+            <canvas id="stockHealthChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /app-wrapper -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

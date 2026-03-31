@@ -1,0 +1,87 @@
+/* ================================================
+   NEXSTOCK AI — DESIGN TOKENS
+   css/variables.css
+================================================ */
+
+:root {
+  /* Backgrounds */
+  --bg-void:        #03040a;
+  --bg-deep:        #07090f;
+  --bg-surface:     #0c0f1a;
+  --bg-card:        #101523;
+  --bg-card-hover:  #141928;
+  --bg-glass:       rgba(16,21,35,0.7);
+
+  /* Borders */
+  --border-dim:     rgba(255,255,255,0.06);
+  --border-mid:     rgba(255,255,255,0.10);
+  --border-glow:    rgba(64,220,255,0.25);
+
+  /* Accent palette */
+  --accent-cyan:        #40dcff;
+  --accent-cyan-dim:    rgba(64,220,255,0.12);
+  --accent-violet:      #8b5cf6;
+  --accent-violet-dim:  rgba(139,92,246,0.15);
+  --accent-emerald:     #10d9a0;
+  --accent-emerald-dim: rgba(16,217,160,0.12);
+  --accent-rose:        #f43f5e;
+  --accent-rose-dim:    rgba(244,63,94,0.12);
+  --accent-amber:       #f59e0b;
+  --accent-amber-dim:   rgba(245,158,11,0.12);
+
+  /* Text */
+  --text-primary:   #e8eaf2;
+  --text-secondary: #7a85a3;
+  --text-muted:     #3d4660;
+
+  /* Gradients */
+  --gradient-ai:    linear-gradient(135deg, #40dcff 0%, #8b5cf6 100%);
+  --gradient-gold:  linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%);
+
+  /* Shadows */
+  --shadow-card:  0 0 0 1px rgba(255,255,255,0.05), 0 4px 32px rgba(0,0,0,0.4);
+  --shadow-glow:  0 0 30px rgba(64,220,255,0.15);
+  --shadow-lg:    0 20px 60px rgba(0,0,0,0.5);
+
+  /* Typography */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Instrument Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Spacing & Sizing */
+  --radius:     14px;
+  --radius-sm:  8px;
+  --radius-lg:  20px;
+  --sidebar-w:  240px;
+  --topbar-h:   64px;
+
+  /* Motion */
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+  --spring:     0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ---- Light Mode overrides ---- */
+[data-theme="light"] {
+  --bg-void:        #f0f2f8;
+  --bg-deep:        #e8ecf5;
+  --bg-surface:     #f5f7fc;
+  --bg-card:        #ffffff;
+  --bg-card-hover:  #f8faff;
+  --bg-glass:       rgba(255,255,255,0.85);
+  --border-dim:     rgba(0,0,0,0.08);
+  --border-mid:     rgba(0,0,0,0.14);
+  --border-glow:    rgba(14,165,233,0.3);
+  --accent-cyan:        #0ea5e9;
+  --accent-cyan-dim:    rgba(14,165,233,0.10);
+  --accent-violet:      #7c3aed;
+  --accent-violet-dim:  rgba(124,58,237,0.10);
+  --accent-emerald:     #059669;
+  --accent-emerald-dim: rgba(5,150,105,0.10);
+  --accent-rose:        #e11d48;
+  --accent-rose-dim:    rgba(225,29,72,0.10);
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --shadow-card:  0 0 0 1px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-glow:  0 0 30px rgba(14,165,233,0.10);
+}

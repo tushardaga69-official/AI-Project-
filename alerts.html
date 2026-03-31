@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexStock AI · Smart Alerts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script>window.ACTIVE_PAGE = 'alerts';</script>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <div id="sidebarMount"></div>
+
+  <div class="main">
+    <div id="topbarMount"></div>
+
+    <div class="page-content">
+
+      <!-- Header -->
+      <div class="section-header">
+        <div>
+          <div class="section-title">Smart Alert System</div>
+          <div class="section-subtitle">AI-powered inventory warnings and reorder recommendations</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearAllAlerts()">✕ Clear All</button>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="alerts-summary-grid mb-20">
+        <div class="alert-summary-card">
+          <div class="alert-summary-icon" style="background:var(--accent-rose-dim)">🚨</div>
+          <div>
+            <div class="alert-summary-count text-rose" id="countCritical">4</div>
+            <div class="alert-summary-label">Critical</div>
+          </div>
+        </div>
+        <div class="alert-summary-card">
+          <div class="alert-summary-icon" style="background:var(--accent-amber-dim)">⚡</div>
+          <div>
+            <div class="alert-summary-count text-amber" id="countWarning">3</div>
+            <div class="alert-summary-label">Warnings</div>
+          </div>
+        </div>
+        <div class="alert-summary-card">
+          <div class="alert-summary-icon" style="background:var(--accent-cyan-dim)">💡</div>
+          <div>
+            <div class="alert-summary-count text-cyan" id="countInfo">3</div>
+            <div class="alert-summary-label">AI Insights</div>
+          </div>
+        </div>
+        <div class="alert-summary-card">
+          <div class="alert-summary-icon" style="background:var(--accent-violet-dim)">📊</div>
+          <div>
+            <div class="alert-summary-count text-violet" id="countTotal">10</div>
+            <div class="alert-summary-label">Total Active</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-primary" data-alert-filter="all">All Alerts</button>
+        <button class="btn btn-sm btn-ghost"   data-alert-filter="critical">🚨 Critical</button>
+        <button class="btn btn-sm btn-ghost"   data-alert-filter="warning">⚡ Warnings</button>
+        <button class="btn btn-sm btn-ghost"   data-alert-filter="info">💡 AI Insights</button>
+      </div>
+
+      <!-- Alerts List -->
+      <div class="alerts-list" id="alertsList">
+        <!-- Populated by alerts.js -->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/alerts.js"></script>
+</body>
+</html>

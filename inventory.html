@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexStock AI · Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script>window.ACTIVE_PAGE = 'inventory';</script>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <div id="sidebarMount"></div>
+
+  <div class="main">
+    <div id="topbarMount"></div>
+
+    <div class="page-content">
+
+      <!-- Header -->
+      <div class="section-header mb-20">
+        <div>
+          <div class="section-title">Inventory Management</div>
+          <div class="section-subtitle">Add, edit, and track all your products in one place</div>
+        </div>
+        <button class="btn btn-primary" id="addProductBtn">＋ Add Product</button>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search">
+            <span style="color:var(--text-muted)">🔍</span>
+            <input type="text" id="inventorySearch" placeholder="Search products by name or category…">
+          </div>
+          <div class="filter-group">
+            <select class="filter-select" id="categoryFilter">
+              <option value="">All Categories</option>
+              <option>Electronics</option>
+              <option>Clothing</option>
+              <option>Food</option>
+              <option>Sports</option>
+              <option>Beauty</option>
+            </select>
+            <select class="filter-select" id="statusFilter">
+              <option value="">All Status</option>
+              <option>In Stock</option>
+              <option>Low Stock</option>
+              <option>Overstock</option>
+              <option>Out of Stock</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="name"     onclick="sortTable('name')">Product</th>
+                <th class="sortable" data-sort="category" onclick="sortTable('category')">Category</th>
+                <th class="sortable" data-sort="quantity" onclick="sortTable('quantity')">Qty</th>
+                <th class="sortable" data-sort="price"    onclick="sortTable('price')">Price</th>
+                <th>Status</th>
+                <th>AI Forecast</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Populated by inventory.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <div class="page-info" id="pageInfo">Loading…</div>
+          <div class="page-buttons" id="pageButtons"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADD / EDIT MODAL ===== -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Product</div>
+      <button class="modal-close" onclick="Modal.close('productModal')">✕</button>
+    </div>
+
+    <form id="productForm">
+      <input type="hidden" id="modalProductId">
+
+      <div class="form-group">
+        <label class="form-label">Product Name *</label>
+        <input class="form-control" type="text" id="modalName" placeholder="e.g. iPhone 15 Pro" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-control" id="modalCategory">
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Food</option>
+            <option>Sports</option>
+            <option>Beauty</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji Icon</label>
+          <input class="form-control" type="text" id="modalEmoji" placeholder="e.g. 📱" maxlength="4">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quantity *</label>
+          <input class="form-control" type="number" id="modalQuantity" placeholder="0" min="0" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price ($) *</label>
+          <input class="form-control" type="number" id="modalPrice" placeholder="0.00" min="0" step="0.01" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Low Stock Threshold</label>
+        <input class="form-control" type="number" id="modalThreshold" placeholder="e.g. 20" min="1">
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save Product</button>
+        <button type="button" class="btn btn-ghost" onclick="Modal.close('productModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DELETE CONFIRM MODAL ===== -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title text-rose">⚠ Delete Product</div>
+      <button class="modal-close" onclick="Modal.close('deleteModal')">✕</button>
+    </div>
+    <p style="color:var(--text-secondary);font-size:14px;line-height:1.65">
+      Are you sure you want to delete
+      <strong id="deleteProductName" style="color:var(--text-primary)"></strong>?
+      This action cannot be undone.
+    </p>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="deleteConfirmBtn">Delete Product</button>
+      <button class="btn btn-ghost"  onclick="Modal.close('deleteModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/inventory.js"></script>
+</body>
+</html>
